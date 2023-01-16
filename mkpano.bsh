@@ -1,0 +1,45 @@
+pwd
+
+
+PREFIX=$(basename $(pwd))
+
+pto_gen -o project.pto *jpg
+
+echo -----
+echo cpfind
+echo -----
+echo ""
+
+cpfind --multirow -o project.pto project.pto
+
+echo -----
+echo celeste_standalone
+echo -----
+echo ""
+
+celeste_standalone -d /Applications/Hugin/Hugin.app/Contents/Resources/xrc/celeste.model -i project.pto -o project.pto
+
+echo -----
+echo cpclean
+echo -----
+echo ""
+
+cpclean -o project.pto project.pto
+
+echo -----
+echo autooptimiser
+echo -----
+echo ""
+
+autooptimiser -a -l -s -m -o project.pto project.pto
+
+pano_modify -o project.pto --center --straighten --fov=AUTO --canvas=25% --crop=AUTO project.pto
+
+nona -v -z LZW -r ldr -m TIFF_m -o ${PREFIX} ./project.pto
+
+enblend  --compression=LZW  -o output_${PREFIX}.tif --  ${PREFIX}*tif
+
+#exiftool -overwrite_original -TagsFromFile /Users/thomas/Documents/hugin1/tmp/DSC01180.jpg -WhitePoint -ColorSpace -@ /Applications/Hugin/Resources/xrc/hugin_exiftool_copy.arg  -@ /var/folders/db/d3110prn22b9b0yslw3_hhsm0000gp/T/heJhMLi9 prefix.tif 
+rm ${PREFIX}*.tif
+
+
